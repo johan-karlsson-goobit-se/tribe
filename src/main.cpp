@@ -1010,25 +1010,6 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state, int nHeig
         vInOutPoints.insert(txin.prevout);
     }
 
-    // Check for blocked inputs
-    if (nHeight >= 109356 // Checkpoint-2
-        || (Params().NetworkIDString() != CBaseChainParams::MAIN)) { 
-        std::string aBlockedTxs[] = {
-            "8072eba0bc521be745b3b0684b2c40e7a6e62bebf9d6047c317f5f4b85505c35",
-            "40caa10fab41f7043d3719d5713d8a9fb5dbd06815949cb9cfacc966b5b3d89f",
-            "44813cf858d017d445ffe5718b207ae328be24fd87ef8557e0a792a3a66a6d94",
-            "4cac4d2fc3c0b2361af732c39b285f67a974377598abe8d6e547c646e468711f",
-            "79b0829be155367c175d279d570f63f98d83f393d7c6e3fab01fbcec4e914864",
-            "67f2f12a97e037fa620bfa7c728209d939af821396d17ec0f1c9f3c151468a33"
-        };
-        std::set<std::string> sBlockedTxs(aBlockedTxs, aBlockedTxs + sizeof(aBlockedTxs) / sizeof(aBlockedTxs[0]));
-        BOOST_FOREACH(const CTxIn& txin, tx.vin)
-        {
-            if (sBlockedTxs.count(txin.prevout.hash.GetHex()))
-                return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-blocked");
-        }
-    }
-
     if (tx.IsCoinBase())
     {
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 100)
